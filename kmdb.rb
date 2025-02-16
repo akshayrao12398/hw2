@@ -1,16 +1,16 @@
-# Drop all tables, so we'll start fresh each time this script is run.
+
 ActiveRecord::Base.connection.execute("DROP TABLE IF EXISTS performances")
 ActiveRecord::Base.connection.execute("DROP TABLE IF EXISTS movies")
 ActiveRecord::Base.connection.execute("DROP TABLE IF EXISTS studios")
 ActiveRecord::Base.connection.execute("DROP TABLE IF EXISTS actors")
 
-# Configure the database
+
 ActiveRecord::Base.establish_connection(
   adapter: "sqlite3",
   database: "kmdb.sqlite3"
 )
 
-# Define the tables
+
 class Movie < ActiveRecord::Base
   belongs_to :studio
   has_many :performances
@@ -31,7 +31,7 @@ class Performance < ActiveRecord::Base
   belongs_to :actor
 end
 
-# Create the tables
+
 ActiveRecord::Schema.define do
   create_table :studios do |t|
     t.string :name
@@ -55,12 +55,10 @@ ActiveRecord::Schema.define do
   end
 end
 
-# Insert data into your database
 
-# Create the studio
 studio = Studio.create(name: "Warner Bros.")
 
-# Create the movies
+
 batman_begins = Movie.create(
   title: "Batman Begins",
   year: 2005,
@@ -82,7 +80,7 @@ dark_knight_rises = Movie.create(
   studio_id: studio.id
 )
 
-# Create the actors
+
 christian_bale = Actor.create(name: "Christian Bale")
 michael_caine = Actor.create(name: "Michael Caine")
 liam_neeson = Actor.create(name: "Liam Neeson")
@@ -95,7 +93,7 @@ tom_hardy = Actor.create(name: "Tom Hardy")
 joseph_gordon_levitt = Actor.create(name: "Joseph Gordon-Levitt")
 anne_hathaway = Actor.create(name: "Anne Hathaway")
 
-# Create the performances
+
 Performance.create([
   { movie_id: batman_begins.id, actor_id: christian_bale.id, character_name: "Bruce Wayne" },
   { movie_id: batman_begins.id, actor_id: michael_caine.id, character_name: "Alfred" },
@@ -114,23 +112,23 @@ Performance.create([
   { movie_id: dark_knight_rises.id, actor_id: anne_hathaway.id, character_name: "Selina Kyle" }
 ])
 
-# Prints a header for the movies output
+
 puts "Movies"
 puts "======"
 puts ""
 
-# Query the movies data and loop through the results to display the movies output
+
 Movie.all.order(:year).each do |movie|
   puts "#{movie.title.ljust(20)} #{movie.year}  #{movie.rating.ljust(6)} #{movie.studio.name}"
 end
 
-# Prints a header for the cast output
+
 puts ""
 puts "Top Cast"
 puts "========"
 puts ""
 
-# Query the cast data and loop through the results to display the cast output
+
 Performance.all.includes(:movie, :actor).order('movies.title, performances.character_name').each do |performance|
   puts "#{performance.movie.title.ljust(20)} #{performance.actor.name.ljust(20)} #{performance.character_name}"
 end
